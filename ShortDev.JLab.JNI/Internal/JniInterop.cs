@@ -20,4 +20,7 @@ internal static unsafe class JniInterop
         if (status.Value != 0)
             throw new Exception();
     }
+
+    public static bool AsBool(void* value)
+        => *(bool*)&value;
 }

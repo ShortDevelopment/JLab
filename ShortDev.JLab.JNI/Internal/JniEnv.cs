@@ -37,7 +37,7 @@ internal unsafe struct JNINativeInterface_
 
     void* Throw;
     public delegate* unmanaged[Stdcall]<JNIEnv*, void* /*clazz*/, char*/*msg*/, jint> ThrowNew;
-    void* ExceptionOccurred;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*> ExceptionOccurred;
     public delegate* unmanaged[Stdcall]<JNIEnv*, void> ExceptionDescribe;
     public delegate* unmanaged[Stdcall]<JNIEnv*, void> ExceptionClear;
     public delegate* unmanaged[Stdcall]<JNIEnv*, char*, void> FatalError;
@@ -348,9 +348,42 @@ internal unsafe struct JNINativeInterface_
     {
         if (env->functions->ExceptionCheck(env))
         {
-            env->functions->ExceptionDescribe(env);
-            throw new Exception();
+            // env->functions->ExceptionDescribe(env);
+            void* throwable = ExceptionOccurred(env);
+            ExceptionClear(env);
+            ThrowDotNet(env, throwable);
         }
+    }
+
+    public void ThrowDotNet(JNIEnv* env, void* throwable)
+    {
+        if (throwable == (void*)0)
+            return;
+
+        string msg = string.Empty;
+        while (throwable != (void*)0)
+        {
+            void* pStr = CallInstance(
+                env,
+                "java/lang/Throwable",
+                throwable,
+                "toString",
+                "()Ljava/lang/String;",
+                __arglist()
+            );
+            if (!string.IsNullOrEmpty(msg))
+                msg += Environment.NewLine;
+            msg += GetStringContent(env, pStr);
+            throwable = CallInstance(
+                env,
+                "java/lang/Throwable",
+                throwable,
+                "getCause",
+                "()Ljava/lang/Throwable;",
+                __arglist()
+            );
+        }
+        throw new Exception(msg);
     }
 
     public void* CallStatic(JNIEnv* env, string className, string methodName, string sig, __arglist)

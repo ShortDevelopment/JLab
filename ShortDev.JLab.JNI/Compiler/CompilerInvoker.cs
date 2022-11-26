@@ -1,4 +1,5 @@
 ﻿using ShortDev.JLab.JNI.Internal;
+using System.Runtime.CompilerServices;
 
 namespace ShortDev.JLab.JNI.Compiler;
 
@@ -13,18 +14,19 @@ public sealed unsafe class CompilerInvoker
         _pCompiler = pCompiler;
     }
 
-    public void Compile(string id, string code)
+    public CompilationResult Compile(string id, string code)
     {
-        var result = _env->functions->CallInstance(
+        var pResult = _env->functions->CallInstance(
             _env,
             "ShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker",
             _pCompiler,
             "Compile",
-            "(Ljava/lang/String;Ljava/lang/String;)V",
+            "(Ljava/lang/String;Ljava/lang/String;)LShortDev/JLab/CompilerPipeline/CompilationResult;",
             __arglist(
                 _env->functions->CreateString(_env, id),
                 _env->functions->CreateString(_env, code)
             )
         );
+        return new(_env, pResult);
     }
 }

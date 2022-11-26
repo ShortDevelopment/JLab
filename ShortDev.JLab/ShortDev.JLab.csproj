@@ -7,8 +7,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Controllers\" />
 		<Folder Include="wwwroot\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ShortDev.JLab.JNI\ShortDev.JLab.JNI.csproj" />
 	</ItemGroup>
 
 	<Target Name="BuildSvelte" BeforeTargets="BeforeBuild">

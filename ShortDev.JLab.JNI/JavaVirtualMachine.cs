@@ -22,7 +22,8 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
 
     public static JavaVirtualMachine Create()
     {
-        fixed (byte* pOption1 = @"-Djava.class.path=./ShortDev.JLab.CompilerPipeline.jar;".ToUTF8()) // java.library.path
+        string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
+        fixed (byte* pOption1 = $"-Djava.class.path={jarLocation};".ToUTF8()) // java.library.path
         {
             JavaVM* jvm;
             JNIEnv* env;

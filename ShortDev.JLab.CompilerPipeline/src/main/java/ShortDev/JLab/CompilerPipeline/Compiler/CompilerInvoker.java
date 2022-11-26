@@ -1,10 +1,13 @@
 package ShortDev.JLab.CompilerPipeline.Compiler;
 
+import ShortDev.JLab.CompilerPipeline.CompilationResult;
+
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 
 public final class CompilerInvoker implements Closeable {
@@ -25,11 +28,12 @@ public final class CompilerInvoker implements Closeable {
         return new CompilerInvoker(systemCompiler, fileManager);
     }
 
-    public void Compile(String id, String code) {
+    public CompilationResult Compile(String id, String code) {
         var compilationUnits = Arrays.asList(new JavaStringSource(id, code));
-        var task = _compiler.getTask(null, _fileManager, null, null, null, compilationUnits);
-        if (!task.call())
-            throw new RuntimeException("Compilation errors");
+        var writer = new StringWriter();
+        var task = _compiler.getTask(writer, _fileManager, null, null, null, compilationUnits);
+        var isSuccess = task.call();
+        return new CompilationResult(id, isSuccess, writer.toString());
     }
 
     @Override
