@@ -1,5 +1,4 @@
 ﻿using ShortDev.JLab.JNI.Internal;
-using System.Runtime.CompilerServices;
 
 namespace ShortDev.JLab.JNI.Compiler;
 

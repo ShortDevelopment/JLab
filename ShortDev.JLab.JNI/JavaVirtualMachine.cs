@@ -24,15 +24,19 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     {
         string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
         fixed (byte* pOption1 = $"-Djava.class.path={jarLocation};".ToUTF8()) // java.library.path
+        fixed (byte* pOption2 = "--add-exports=jdk.jdeps/com.sun.tools.classfile=ALL-UNNAMED".ToUTF8())
+        fixed (byte* pOption3 = "--add-exports=jdk.jdeps/com.sun.tools.javap=ALL-UNNAMED".ToUTF8())
         {
             JavaVM* jvm;
             JNIEnv* env;
             JavaVMInitArgs vmArgs = new();
             vmArgs.version = JniVersion.JNI_VERSION_1_6;
-            vmArgs.nOptions = 1;
-            JavaVMOption options = new();
-            options.optionString = (char*)pOption1;
-            vmArgs.options = &options;
+            var options = stackalloc JavaVMOption[3];
+            options[0].optionString = (char*)pOption1;
+            options[1].optionString = (char*)pOption2;
+            options[2].optionString = (char*)pOption3;
+            vmArgs.options = options;
+            vmArgs.nOptions = 3;
             vmArgs.ignoreUnrecognized = false;
             JniInterop.ThrowOnError(JniInterop.CreateJavaVM(&jvm, &env, &vmArgs));
             env->functions->ThrowOnError(env);
@@ -82,6 +86,18 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             "ShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker",
             "Create",
             "()LShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker;",
+            __arglist()
+        );
+        return new(_env, pDecompiler);
+    }
+
+    public Disassembler.DisassemblerInvoker CreateDisassembler()
+    {
+        var pDecompiler = _env->functions->CallStatic(
+            _env,
+            "ShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker",
+            "Create",
+            "()LShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker;",
             __arglist()
         );
         return new(_env, pDecompiler);

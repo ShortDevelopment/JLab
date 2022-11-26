@@ -18,7 +18,7 @@ public class DecompileController : Controller
         using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
         {
             string source = await reader.ReadToEndAsync();
-            return Content(await _jvm.DecompileAsync(source));
+            return Content(await _jvm.DisassembleAsync(source));
         }
     }
 }

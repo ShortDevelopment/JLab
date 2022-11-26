@@ -28,7 +28,25 @@ public sealed class JvmService : IDisposable
                 return result.Error ?? "Unkown error!!";
 
             var decompiler = vm.CreateDecompiler();
-            return decompiler.Decompile(id);
+            return decompiler.Decompile(result);
+        });
+    }
+
+    public Task<string> DisassembleAsync(string source)
+    {
+        return _jvm.RunAsync((vm) =>
+        {
+            string id = "Test";
+            var compiler = vm.CreateCompiler();
+            var result = compiler.Compile(
+                id,
+                source
+            );
+            if (!result.IsSuccess)
+                return result.Error ?? "Unkown error!!";
+
+            var decompiler = vm.CreateDisassembler();
+            return decompiler.Disassemble(result);
         });
     }
 

@@ -1,26 +1,26 @@
 ﻿using ShortDev.JLab.JNI.Compiler;
 using ShortDev.JLab.JNI.Internal;
 
-namespace ShortDev.JLab.JNI.Decompiler;
+namespace ShortDev.JLab.JNI.Disassembler;
 
-public sealed unsafe class DecompilerInvoker
+public sealed unsafe class DisassemblerInvoker
 {
     JNIEnv* _env;
-    void* _pDecompiler;
+    void* _pDisassembler;
 
-    internal DecompilerInvoker(JNIEnv* env, void* pDecompiler)
+    internal DisassemblerInvoker(JNIEnv* env, void* pDisassembler)
     {
         _env = env;
-        _pDecompiler = pDecompiler;
+        _pDisassembler = pDisassembler;
     }
 
-    public string Decompile(CompilationResult compilationResult)
+    public string Disassemble(CompilationResult compilationResult)
     {
         var result = _env->functions->CallInstance(
             _env,
-            "ShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker",
-            _pDecompiler,
-            "Decompile",
+            "ShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker",
+            _pDisassembler,
+            "Disassemble",
             "(LShortDev/JLab/CompilerPipeline/CompilationResult;)Ljava/lang/String;",
             __arglist(
                 compilationResult.ptr

@@ -4,8 +4,10 @@ namespace ShortDev.JLab.JNI.Compiler;
 
 public sealed unsafe class CompilationResult
 {
+    internal void* ptr { get; }
     internal CompilationResult(JNIEnv* env, void* pResult)
     {
+        ptr = pResult;
         IsSuccess = JniInterop.AsBool(env->functions->CallInstance(
             env,
             "ShortDev/JLab/CompilerPipeline/CompilationResult",
