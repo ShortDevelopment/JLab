@@ -1,5 +1,8 @@
 ﻿namespace ShortDev.JLab.JNI.Internal;
 
+/// <summary>
+/// <see href="https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/invocation.html"/>
+/// </summary>
 internal unsafe struct JavaVM
 {
     public JNIInvokeInterface_* functions;

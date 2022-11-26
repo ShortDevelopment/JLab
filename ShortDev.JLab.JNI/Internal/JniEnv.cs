@@ -1,9 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ShortDev.JLab.JNI.Internal;
 
+/// <summary>
+/// <see cref="https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/functions.html"/>
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct JNIEnv
 {
