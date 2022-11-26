@@ -1,4 +1,4 @@
-package ShortDev.JLab.CompilerPipeline;
+package ShortDev.JLab.CompilerPipeline.Compiler;
 
 import javax.tools.SimpleJavaFileObject;
 import java.io.IOException;

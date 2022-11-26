@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ShortDev.JLab.JNI.Internal;
 
@@ -244,9 +246,9 @@ internal unsafe struct JNINativeInterface_
     void* SetStaticDoubleField;
 
     public delegate* unmanaged[Stdcall]<JNIEnv*, char*, int, void*> NewString;
-    void* GetStringLength;
-    void* GetStringChars;
-    void* ReleaseStringChars;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*, int> GetStringLength;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void* /*str*/, ref bool /*isCopyk*/, char*> GetStringChars;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void* /*str*/, char*, void> ReleaseStringChars;
 
     void* NewStringUTF;
     void* GetStringUTFLength;
@@ -352,50 +354,63 @@ internal unsafe struct JNINativeInterface_
     public void* CallStatic(JNIEnv* env, string className, string methodName, string sig, __arglist)
     {
         ArgIterator args = new(__arglist);
-        return CallInternal(env, className, methodName, sig, args, isStatic: true, (void*)0);
+        GetMethodInternal(env, className, (void*)0, methodName, sig, isStatic: true, out var pClass, out var pMethod);
+        var result = CallStaticObjectMethodV(env, pClass, pMethod, args);
+        ThrowOnError(env);
+        return result;
     }
 
     public void* CallInstance(JNIEnv* env, string className, void* pObj, string methodName, string sig, __arglist)
     {
         ArgIterator args = new(__arglist);
-        return CallInternal(env, className, methodName, sig, args, isStatic: false, pObj);
+        GetMethodInternal(env, className, (void*)0, methodName, sig, isStatic: false, out _, out var pMethod);
+        var result = CallObjectMethodV(env, pObj, pMethod, args);
+        ThrowOnError(env);
+        return result;
     }
 
-    void* CallInternal(JNIEnv* env, string className, string methodName, string sig, ArgIterator args, bool isStatic, void* pObj)
+    void GetMethodInternal(JNIEnv* env, string className, void* pObj, string methodName, string sig, bool isStatic, out void* pClass, out void* pMethod)
     {
         fixed (byte* pClassName = className.ToUTF8())
         fixed (byte* pMethodName = methodName.ToUTF8())
         fixed (byte* pMethodSig = sig.ToUTF8())
         {
-            var pClass = FindClass(env, (char*)pClassName);
+            pClass = FindClass(env, (char*)pClassName);
             ThrowOnError(env);
 
-            void* pMethod;
             if (isStatic)
                 pMethod = GetStaticMethodID(env, pClass, (char*)pMethodName, (char*)pMethodSig);
             else
                 pMethod = GetMethodID(env, pClass, (char*)pMethodName, (char*)pMethodSig);
             ThrowOnError(env);
-
-            void* result = (void*)0;
-            if (isStatic)
-                result = CallStaticObjectMethodV(env, pClass, pMethod, args);
-            else
-                CallVoidMethodV(env, pObj, pMethod, args);
-            ThrowOnError(env);
-
-            return result;
         }
     }
 
     public void* CreateString(JNIEnv* env, string value)
     {
-        Span<byte> data = value.ToEncoding(System.Text.Encoding.Unicode);
+        Span<byte> data = value.ToEncoding(Encoding.Unicode);
         fixed (byte* pValue = data)
         {
             var result = NewString(env, (char*)pValue, value.Length);
             ThrowOnError(env);
             return result;
+        }
+    }
+
+    public string GetStringContent(JNIEnv* env, void* str)
+    {
+        var length = GetStringLength(env, str);
+        ThrowOnError(env);
+        bool isCopy = false;
+        char* pContent = GetStringChars(env, str, ref isCopy);
+        try
+        {
+            ThrowOnError(env);
+            return Encoding.Unicode.GetString((byte*)pContent, length * 2);
+        }
+        finally
+        {
+            ReleaseStringChars(env, str, pContent);
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using ShortDev.JLab.JNI.Internal;
 using ShortDev.JLab.JNI.Internal.Platform;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 
 namespace ShortDev.JLab.JNI;
 
@@ -65,24 +62,50 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
         _env->functions->ThrowOnError(_env);
     }
 
-    public void CreateCompiler()
+    public Compiler.CompilerInvoker CreateCompiler()
     {
         var pCompiler = _env->functions->CallStatic(
             _env,
-            "ShortDev/JLab/CompilerPipeline/CompilerInvoker",            
+            "ShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/CompilerInvoker;",
+            "()LShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker;",
             __arglist()
         );
-        var result = _env->functions->CallInstance(
-            _env,
-            "ShortDev/JLab/CompilerPipeline/CompilerInvoker",
-            pCompiler,
-            "Compile",
-            "(Ljava/lang/String;Ljava/lang/String;)V",
-            __arglist(_env->functions->CreateString(_env, "Test"), _env->functions->CreateString(_env, "public class Test{}"))
-        );
+        return new(_env, pCompiler);
     }
+
+    public Decompiler.DecompilerInvoker CreateDecompiler()
+    {
+        var pDecompiler = _env->functions->CallStatic(
+            _env,
+            "ShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker",
+            "Create",
+            "()LShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker;",
+            __arglist()
+        );
+        return new(_env, pDecompiler);
+    }
+
+    public Task<T> RunAsync<T>(Func<JavaVirtualMachine, T> func)
+    {
+        return Task.Run(() =>
+        {
+            JNIEnv* env;
+            JniInterop.ThrowOnError(_vm->functions->AttachCurrentThread(_vm, &env, (void*)0));
+            try
+            {
+                return func(new(_vm, env));
+            }
+            finally
+            {
+                // ToDo: What happens if "DestroyJavaVM" has been called already?!
+                JniInterop.ThrowOnError(_vm->functions->DetachCurrentThread(_vm));
+            }
+        });
+    }
+
+    public Task RunAsync(Action<JavaVirtualMachine> func)
+        => RunAsync<byte>((vm) => { func(vm); return 0b0; });
 
     public void Dispose()
         => _vm->functions->DestroyJavaVM(_vm);

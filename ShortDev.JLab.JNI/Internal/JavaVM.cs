@@ -12,5 +12,7 @@ internal unsafe struct JNIInvokeInterface_
     void* reserved2;
 
     public delegate* unmanaged[Stdcall]<JavaVM*, jint> DestroyJavaVM;
+    public delegate* unmanaged[Stdcall]<JavaVM*, JNIEnv**, void*/*args*/, jint> AttachCurrentThread;
+    public delegate* unmanaged[Stdcall]<JavaVM*, jint> DetachCurrentThread;
     // ...
 }
