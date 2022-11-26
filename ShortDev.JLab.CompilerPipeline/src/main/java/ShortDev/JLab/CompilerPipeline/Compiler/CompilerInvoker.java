@@ -1,6 +1,7 @@
 package ShortDev.JLab.CompilerPipeline.Compiler;
 
 import ShortDev.JLab.CompilerPipeline.CompilationResult;
+import ShortDev.JLab.CompilerPipeline.JLabFileManager;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
@@ -30,10 +31,13 @@ public final class CompilerInvoker implements Closeable {
 
     public CompilationResult Compile(String id, String code) {
         var compilationUnits = Arrays.asList(new JavaStringSource(id, code));
+
+        var fileManager = new JLabFileManager(_fileManager);
+
         var writer = new StringWriter();
-        var task = _compiler.getTask(writer, _fileManager, null, null, null, compilationUnits);
+        var task = _compiler.getTask(writer, fileManager, null, null, null, compilationUnits);
         var isSuccess = task.call();
-        return new CompilationResult(id, isSuccess, writer.toString());
+        return new CompilationResult(id, isSuccess, writer.toString(), fileManager);
     }
 
     @Override

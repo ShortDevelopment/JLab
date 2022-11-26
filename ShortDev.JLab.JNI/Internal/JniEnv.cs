@@ -348,9 +348,9 @@ internal unsafe struct JNINativeInterface_
     {
         if (env->functions->ExceptionCheck(env))
         {
-            // env->functions->ExceptionDescribe(env);
             void* throwable = ExceptionOccurred(env);
-            ExceptionClear(env);
+            env->functions->ExceptionDescribe(env);
+            // ExceptionClear(env);
             ThrowDotNet(env, throwable);
         }
     }

@@ -13,7 +13,18 @@ public class DecompileController : Controller
 
     [HttpPost, Route("api/v1.0/decompile")]
     [Consumes("text/plain")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Decompile()
+    {
+        using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            string source = await reader.ReadToEndAsync();
+            return Content(await _jvm.DecompileAsync(source));
+        }
+    }
+
+    [HttpPost, Route("api/v1.0/bytecode")]
+    [Consumes("text/plain")]
+    public async Task<IActionResult> ByteCode()
     {
         using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
         {

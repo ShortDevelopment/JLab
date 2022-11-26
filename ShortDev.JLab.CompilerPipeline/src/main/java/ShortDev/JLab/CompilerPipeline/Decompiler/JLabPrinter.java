@@ -2,7 +2,7 @@ package ShortDev.JLab.CompilerPipeline.Decompiler;
 
 import org.jd.core.v1.api.printer.Printer;
 
-public final class JLabPrinter implements Printer {
+final class JLabPrinter implements Printer {
     protected static final String TAB = "  ";
     protected static final String NEWLINE = "\n";
 

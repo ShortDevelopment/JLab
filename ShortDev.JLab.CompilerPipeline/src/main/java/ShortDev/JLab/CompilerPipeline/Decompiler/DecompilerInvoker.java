@@ -7,8 +7,9 @@ import org.jd.core.v1.ClassFileToJavaSourceDecompiler;
 import org.jd.core.v1.api.loader.Loader;
 import org.jd.core.v1.api.printer.Printer;
 
+import java.util.Iterator;
+
 public final class DecompilerInvoker {
-    private final Loader _loader = new JLabLoader();
     private final Printer _printer = new JLabPrinter();
 
     private DecompilerInvoker() {
@@ -19,8 +20,13 @@ public final class DecompilerInvoker {
     }
 
     public String Decompile(CompilationResult result) throws Exception {
+        var fileManager = result.FileManager();
+        var loader = new JLabLoader(fileManager);
         ClassFileToJavaSourceDecompiler decompiler = new ClassFileToJavaSourceDecompiler();
-        decompiler.decompile(_loader, _printer, result.Id());
+        for (Iterator<String> it = fileManager.GetClassNames().asIterator(); it.hasNext(); ) {
+            String id = it.next();
+            decompiler.decompile(loader, _printer, id);
+        }
         return _printer.toString();
     }
 }
