@@ -11,7 +11,7 @@ public class DecompileController : Controller
     public DecompileController(JvmService jvm)
         => _jvm = jvm;
 
-    [HttpPost, Route("api/v1.0/decompile")]
+    [HttpPost, Route("api/v1.0/JavaCode")]
     [Consumes("text/plain")]
     public async Task<IActionResult> Decompile()
     {
@@ -22,14 +22,25 @@ public class DecompileController : Controller
         }
     }
 
-    [HttpPost, Route("api/v1.0/bytecode")]
+    [HttpPost, Route("api/v1.0/ByteCode")]
     [Consumes("text/plain")]
     public async Task<IActionResult> ByteCode()
     {
         using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
         {
             string source = await reader.ReadToEndAsync();
-            return Content(await _jvm.DisassembleAsync(source));
+            return Content(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants"));
+        }
+    }
+
+    [HttpPost, Route("api/v1.0/ByteCode-Verbose")]
+    [Consumes("text/plain")]
+    public async Task<IActionResult> ByteCodeVerbose()
+    {
+        using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            string source = await reader.ReadToEndAsync();
+            return Content(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants", "-v"));
         }
     }
 }

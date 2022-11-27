@@ -22,8 +22,8 @@ public sealed unsafe class CompilerInvoker
             "Compile",
             "(Ljava/lang/String;Ljava/lang/String;)LShortDev/JLab/CompilerPipeline/CompilationResult;",
             __arglist(
-                _env->functions->CreateString(_env, id),
-                _env->functions->CreateString(_env, code)
+                _env->functions->CreateJavaString(_env, id),
+                _env->functions->CreateJavaString(_env, code)
             )
         );
         return new(_env, pResult);

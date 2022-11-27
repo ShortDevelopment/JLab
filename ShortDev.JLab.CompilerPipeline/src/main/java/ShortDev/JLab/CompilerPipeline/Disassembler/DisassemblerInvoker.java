@@ -3,10 +3,8 @@ package ShortDev.JLab.CompilerPipeline.Disassembler;
 // https://github.com/openjdk/jdk8u/tree/master/langtools/src/share/classes/com/sun/tools/javap
 
 import ShortDev.JLab.CompilerPipeline.CompilationResult;
-import ShortDev.JLab.CompilerPipeline.JLabFileManager;
 import com.sun.tools.javap.*;
 
-import javax.tools.JavaFileObject;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,7 +20,7 @@ public final class DisassemblerInvoker {
 
     private String[] _flags = new String[]{"-c"};
 
-    public void SetFlag(String... flags) {
+    public void SetFlag(String[] flags) {
         this._flags = flags;
     }
 

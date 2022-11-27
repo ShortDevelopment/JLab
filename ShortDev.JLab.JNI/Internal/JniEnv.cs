@@ -260,9 +260,9 @@ internal unsafe struct JNINativeInterface_
 
     void* GetArrayLength;
 
-    void* NewObjectArray;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, int/*length*/, void*/*class*/, void*/*initialElement*/, void*> NewObjectArray;
     void* GetObjectArrayElement;
-    void* SetObjectArrayElement;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*pArray*/, int/*index*/, void*/*value*/, void> SetObjectArrayElement;
 
     void* NewBooleanArray;
     void* NewByteArray;
@@ -421,7 +421,7 @@ internal unsafe struct JNINativeInterface_
         }
     }
 
-    public void* CreateString(JNIEnv* env, string value)
+    public void* CreateJavaString(JNIEnv* env, string value)
     {
         Span<byte> data = value.ToEncoding(Encoding.Unicode);
         fixed (byte* pValue = data)
@@ -447,5 +447,29 @@ internal unsafe struct JNINativeInterface_
         {
             ReleaseStringChars(env, str, pContent);
         }
+    }
+
+    public void* CreateJavaArray<T>(JNIEnv* env, string className, T[] array, Func<T, nint> converter) where T : class
+    {
+        void* pClass;
+        fixed (byte* pClassName = className.ToUTF8())
+            pClass = FindClass(env, (char*)pClassName);
+        ThrowOnError(env);
+
+        var pArray = NewObjectArray(env, array.Length, pClass, null);
+        ThrowOnError(env);
+        for (int i = 0; i < array.Length; i++)
+        {
+            void* pEle = (void*)converter(array[i]);
+            SetObjectArrayElement(env, pArray, i, pEle);
+            ThrowOnError(env);
+        }
+        return pArray;
+    }
+
+    public void* CreateStringArray(JNIEnv* env, string[] array)
+    {
+        var cache = this;
+        return CreateJavaArray(env, "java/lang/String", array, (value) => (nint)cache.CreateJavaString(env, value));
     }
 }

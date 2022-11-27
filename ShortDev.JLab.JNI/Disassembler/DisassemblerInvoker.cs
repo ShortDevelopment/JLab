@@ -14,6 +14,20 @@ public sealed unsafe class DisassemblerInvoker
         _pDisassembler = pDisassembler;
     }
 
+    public void SetOptions(string[] options)
+    {
+        _env->functions->CallInstance(
+            _env,
+            "ShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker",
+            _pDisassembler,
+            "SetFlag",
+            "([Ljava/lang/String;)V",
+            __arglist(
+                _env->functions->CreateStringArray(_env, options)
+            )
+        );
+    }
+
     public string Disassemble(CompilationResult compilationResult)
     {
         var result = _env->functions->CallInstance(
@@ -26,7 +40,6 @@ public sealed unsafe class DisassemblerInvoker
                 compilationResult.ptr
             )
         );
-        _env->functions->ThrowOnError(_env);
         return _env->functions->GetStringContent(_env, result);
     }
 }

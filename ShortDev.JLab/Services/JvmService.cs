@@ -32,7 +32,7 @@ public sealed class JvmService : IDisposable
         });
     }
 
-    public Task<string> DisassembleAsync(string source)
+    public Task<string> DisassembleAsync(string source, params string[] options)
     {
         return _jvm.RunAsync((vm) =>
         {
@@ -45,8 +45,9 @@ public sealed class JvmService : IDisposable
             if (!result.IsSuccess)
                 return result.Error ?? "Unkown error!!";
 
-            var decompiler = vm.CreateDisassembler();
-            return decompiler.Disassemble(result);
+            var disassembler = vm.CreateDisassembler();
+            disassembler.SetOptions(options);
+            return disassembler.Disassemble(result);
         });
     }
 

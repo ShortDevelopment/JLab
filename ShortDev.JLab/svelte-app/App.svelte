@@ -1,5 +1,5 @@
 <script lang="ts" type="module">
-	type JLabOutputType = 'Java Code' | 'ByteCode';
+	type JLabOutputType = "JavaCode" | "ByteCode" | "ByteCode-Verbose";
 
 	import { onMount } from "svelte";
 	import * as monaco from "monaco-editor";
@@ -10,7 +10,7 @@
 	let codeEditor: monaco.editor.IStandaloneCodeEditor;
 	let previewEditor: monaco.editor.IStandaloneCodeEditor;
 
-	let outputType: JLabOutputType = 'Java Code';
+	let outputType: JLabOutputType = "JavaCode";
 
 	let throttleHandle: NodeJS.Timeout = undefined;
 	function OnContentChanged() {
@@ -24,9 +24,8 @@
 		throttleHandle = setTimeout(async () => {
 			const code = codeEditor.getValue();
 			try {
-				const endpoint = outputType == 'Java Code' ? "api/v1.0/decompile" : "api/v1.0/bytecode";
 				console.log(outputType);
-				const result = await fetch(endpoint, {
+				const result = await fetch(`api/v1.0/${outputType}`, {
 					method: "post",
 					headers: {
 						"content-type": "text/plain",
@@ -98,9 +97,18 @@
 	</div>
 	<div style="display: grid; grid-template-rows: auto 1fr;">
 		<div class="toolbar">
-			<fluent-combobox id="optionComboBox" placeholder="Output type" value={outputType} on:change={(e) => { outputType = e.target.value; OnContentChanged(); }}>
-				<fluent-option selected>Java Code</fluent-option>
+			<fluent-combobox
+				id="optionComboBox"
+				placeholder="Output type"
+				value={outputType}
+				on:change={(e) => {
+					outputType = e.target.value;
+					OnContentChanged();
+				}}
+			>
+				<fluent-option selected>JavaCode</fluent-option>
 				<fluent-option>ByteCode</fluent-option>
+				<fluent-option>ByteCode-Verbose</fluent-option>
 			</fluent-combobox>
 		</div>
 		<div class="toolbody overlayContainer">
