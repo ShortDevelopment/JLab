@@ -26,7 +26,7 @@ public class DecompileController : Controller
     [Consumes("text/plain")]
     public async Task<IActionResult> ByteCode()
     {
-        using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+        using (StreamReader reader = new(Request.Body, Encoding.UTF8))
         {
             string source = await reader.ReadToEndAsync();
             return Content(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants"));
@@ -37,10 +37,21 @@ public class DecompileController : Controller
     [Consumes("text/plain")]
     public async Task<IActionResult> ByteCodeVerbose()
     {
-        using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+        using (StreamReader reader = new(Request.Body, Encoding.UTF8))
         {
             string source = await reader.ReadToEndAsync();
             return Content(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants", "-v"));
+        }
+    }
+
+    [HttpPost, Route("api/v1.0/Run")]
+    [Consumes("text/plain")]
+    public async Task<IActionResult> RunJavaCode()
+    {
+        using (StreamReader reader = new(Request.Body, Encoding.UTF8))
+        {
+            string source = await reader.ReadToEndAsync();
+            return Content(await _jvm.RunAsync(source));
         }
     }
 }

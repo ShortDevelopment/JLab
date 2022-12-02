@@ -37,7 +37,7 @@ public sealed unsafe class DisassemblerInvoker
             "Disassemble",
             "(LShortDev/JLab/CompilerPipeline/CompilationResult;)Ljava/lang/String;",
             __arglist(
-                compilationResult.ptr
+                compilationResult.Ptr
             )
         );
         return _env->functions->GetStringContent(_env, result);

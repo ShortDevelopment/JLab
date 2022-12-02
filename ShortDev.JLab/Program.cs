@@ -1,4 +1,12 @@
+using ShortDev.JLab.Host;
 using ShortDev.JLab.Services;
+
+if (args.Length == 1 && args[0] == HostBootstrap.CmdArgumentName)
+{
+    var host = HostBootstrap.InitializeHost();
+    host.Run();
+    return;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 

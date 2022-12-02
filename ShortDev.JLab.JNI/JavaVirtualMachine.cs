@@ -22,6 +22,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
 
     public static JavaVirtualMachine Create()
     {
+        SetupPlatform();
         string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
         fixed (byte* pOption1 = $"-Djava.class.path={jarLocation};".ToUTF8()) // java.library.path
         fixed (byte* pOption2 = "--add-exports=jdk.jdeps/com.sun.tools.classfile=ALL-UNNAMED".ToUTF8())
@@ -42,6 +43,12 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             env->functions->ThrowOnError(env);
             return new(jvm, env);
         }
+    }
+
+    public void CallMain()
+    {
+        // loader/Main
+        _env->functions->CallStatic(_env, "Test", "Main", "([Ljava/lang/String;)V", __arglist((void*)0));
     }
 
     public int Version

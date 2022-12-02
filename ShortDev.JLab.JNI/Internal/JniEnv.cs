@@ -258,10 +258,10 @@ internal unsafe struct JNINativeInterface_
     void* ReleaseStringUTFChars;
 
 
-    void* GetArrayLength;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*, int> GetArrayLength;
 
     public delegate* unmanaged[Stdcall]<JNIEnv*, int/*length*/, void*/*class*/, void*/*initialElement*/, void*> NewObjectArray;
-    void* GetObjectArrayElement;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*pArray*/, int, void*> GetObjectArrayElement;
     public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*pArray*/, int/*index*/, void*/*value*/, void> SetObjectArrayElement;
 
     void* NewBooleanArray;
@@ -274,7 +274,7 @@ internal unsafe struct JNINativeInterface_
     void* NewDoubleArray;
 
     void* GetBooleanArrayElements;
-    void* GetByteArrayElements;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*parray*/, bool*, byte*> GetByteArrayElements;
     void* GetCharArrayElements;
     void* GetShortArrayElements;
     void* GetIntArrayElements;

@@ -1,5 +1,5 @@
 <script lang="ts" type="module">
-	type JLabOutputType = "JavaCode" | "ByteCode" | "ByteCode-Verbose";
+	type JLabOutputType = "JavaCode" | "ByteCode" | "ByteCode-Verbose" | "Run";
 
 	import { onMount } from "svelte";
 	import * as monaco from "monaco-editor";
@@ -44,7 +44,7 @@
 		const defaultValue = `public final class Test{
 
 	public static void Main(String[] args){
-		
+		System.out.println("Hello World!");
 	}
 
 }`;
@@ -109,6 +109,7 @@
 				<fluent-option selected>JavaCode</fluent-option>
 				<fluent-option>ByteCode</fluent-option>
 				<fluent-option>ByteCode-Verbose</fluent-option>
+				<fluent-option>Run</fluent-option>
 			</fluent-combobox>
 		</div>
 		<div class="toolbody overlayContainer">

@@ -23,7 +23,7 @@ public sealed unsafe class DecompilerInvoker
             "Decompile",
             "(LShortDev/JLab/CompilerPipeline/CompilationResult;)Ljava/lang/String;",
             __arglist(
-                compilationResult.ptr
+                compilationResult.Ptr
             )
         );
         _env->functions->ThrowOnError(_env);

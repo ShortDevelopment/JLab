@@ -14,6 +14,10 @@ public final class JavaClassMemoryFile extends SimpleJavaFileObject {
         this._name = name;
     }
 
+    public String GetName() {
+        return this._name;
+    }
+
     public byte[] GetClassData() {
         return this._classData;
     }

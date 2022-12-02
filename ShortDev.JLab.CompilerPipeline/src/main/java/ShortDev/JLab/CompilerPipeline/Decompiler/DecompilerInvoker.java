@@ -23,8 +23,7 @@ public final class DecompilerInvoker {
         var fileManager = result.FileManager();
         var loader = new JLabLoader(fileManager);
         ClassFileToJavaSourceDecompiler decompiler = new ClassFileToJavaSourceDecompiler();
-        for (Iterator<String> it = fileManager.GetClassNames().asIterator(); it.hasNext(); ) {
-            String id = it.next();
+        for (var id : fileManager.GetClassNames()) {
             decompiler.decompile(loader, _printer, id);
         }
         return _printer.toString();

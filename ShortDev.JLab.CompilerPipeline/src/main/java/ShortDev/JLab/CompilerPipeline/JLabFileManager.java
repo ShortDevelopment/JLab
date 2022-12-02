@@ -6,7 +6,6 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 public final class JLabFileManager extends ForwardingJavaFileManager<JavaFileManager> {
@@ -28,8 +27,20 @@ public final class JLabFileManager extends ForwardingJavaFileManager<JavaFileMan
         throw new UnsupportedOperationException("Only class files are supported as output");
     }
 
-    public Enumeration<String> GetClassNames() {
-        return _store.keys();
+    public String[] GetClassNames() {
+        var result = new String[_store.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = _store.keys().nextElement();
+        }
+        return result;
+    }
+
+    public JavaClassMemoryFile[] GetFiles() {
+        var result = new JavaClassMemoryFile[_store.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = _store.elements().nextElement();
+        }
+        return result;
     }
 
     @Override

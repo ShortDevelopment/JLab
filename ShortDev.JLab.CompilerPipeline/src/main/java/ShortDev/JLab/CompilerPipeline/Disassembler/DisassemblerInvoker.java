@@ -3,11 +3,10 @@ package ShortDev.JLab.CompilerPipeline.Disassembler;
 // https://github.com/openjdk/jdk8u/tree/master/langtools/src/share/classes/com/sun/tools/javap
 
 import ShortDev.JLab.CompilerPipeline.CompilationResult;
-import com.sun.tools.javap.*;
+import com.sun.tools.javap.JavapTask;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public final class DisassemblerInvoker {
@@ -32,16 +31,14 @@ public final class DisassemblerInvoker {
         var fileManager = compilationResult.FileManager();
 
         var writer = new StringWriter();
-        for (Iterator<String> it = fileManager.GetClassNames().asIterator(); it.hasNext(); ) {
-            String id = it.next();
+        for (var id : fileManager.GetClassNames()) {
             var task = new JavapTask(writer, fileManager, null);
             var options = new ArrayList<String>(List.of(flags));
             options.add(id);
             task.handleOptions(options.toArray(new String[0]));
             task.run();
 
-            if (it.hasNext())
-                writer.write("\r\n\r\n");
+            writer.write("\r\n\r\n");
         }
         return writer.toString();
     }
