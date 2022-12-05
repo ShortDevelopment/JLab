@@ -29,16 +29,18 @@ public final class JLabFileManager extends ForwardingJavaFileManager<JavaFileMan
 
     public String[] GetClassNames() {
         var result = new String[_store.size()];
+        var keys = _store.keys();
         for (int i = 0; i < result.length; i++) {
-            result[i] = _store.keys().nextElement();
+            result[i] = keys.nextElement();
         }
         return result;
     }
 
     public JavaClassMemoryFile[] GetFiles() {
         var result = new JavaClassMemoryFile[_store.size()];
+        var elements = _store.elements();
         for (int i = 0; i < result.length; i++) {
-            result[i] = _store.elements().nextElement();
+            result[i] = elements.nextElement();
         }
         return result;
     }
@@ -51,7 +53,6 @@ public final class JLabFileManager extends ForwardingJavaFileManager<JavaFileMan
 
     @Override
     public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException {
-        System.out.println("Read java file \"" + className + "\"");
         if (kind == JavaFileObject.Kind.CLASS) {
             var value = _store.get(className);
             if (value != null)
