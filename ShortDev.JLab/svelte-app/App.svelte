@@ -37,8 +37,10 @@
 				previewEditor.setValue(ex);
 			}
 			progressRing.style.display = "none";
-		}, 1500);
+		}, 500);
 	}
+
+	import opCodes from "./java_opcodes.json"; // assert { type: "json" };
 
 	onMount(() => {
 		const defaultValue = `public final class Test{
@@ -55,12 +57,39 @@
 		});
 		codeEditor.onDidChangeModelContent((e) => OnContentChanged());
 
+		monaco.languages.register({ id: 'java' });
+
 		previewEditor = monaco.editor.create(previewContainer, {
 			language: "java",
 			automaticLayout: false,
 			readOnly: true,
 			minimap: {
 				enabled: false,
+			},
+		});
+
+		monaco.languages.registerHoverProvider("java", {
+			provideHover: function (model, position) {
+				const wordAtPos = model.getWordAtPosition(position);
+				const word = wordAtPos.word;
+				const opCode = opCodes[word];
+				console.log({ opCode });
+				if (!opCode) return;
+
+				return {
+					range: new monaco.Range(
+						position.lineNumber,						
+						wordAtPos.startColumn,
+						position.lineNumber,
+						wordAtPos.endColumn
+					),
+					contents: [
+						{ value: "`" + word + "`" },
+						{
+							value: opCode.description
+						}
+					],
+				};
 			},
 		});
 	});
