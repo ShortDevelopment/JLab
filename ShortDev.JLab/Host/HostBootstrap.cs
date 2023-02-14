@@ -1,6 +1,7 @@
 ﻿using ShortDev.JLab.JNI;
 using ShortDev.JLab.JNI.Compiler;
-using System.Diagnostics;
+using ShortDev.Linux.SandBox;
+using System.Security;
 
 namespace ShortDev.JLab.Host;
 
@@ -8,7 +9,7 @@ public sealed class HostBootstrap
 {
     public const string CmdArgumentName = "-host";
 
-    private List<JavaClassData> _classes;
+    readonly List<JavaClassData> _classes;
     private HostBootstrap(List<JavaClassData> classes)
         => _classes = classes;
 
@@ -17,11 +18,15 @@ public sealed class HostBootstrap
 
     public void Run()
     {
-        using (var vm = JavaVirtualMachine.Create())
-        {
-            foreach (var classData in _classes)
-                vm.LoadClass(classData.Name, classData.Data);
-            vm.CallMain();
-        }
+        using var vm = JavaVirtualMachine.Create();
+        foreach (var classData in _classes)
+            vm.LoadClass(classData.Name, classData.Data);
+
+        if (OperatingSystem.IsLinux())
+            SandBox.EnableStrict();
+        else
+            throw new SecurityException("No sandbox configured for this platform");
+
+        vm.CallMain();
     }
 }
