@@ -4,16 +4,11 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5133"
-    },
-    "Svelte Dev": {
-      "commandName": "Executable",
-      "executablePath": "powershell",
-      "commandLineArgs": "-Command \"npm run dev\"",
-      "workingDirectory": "."
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json"
