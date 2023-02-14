@@ -7,13 +7,25 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5133"
+      "applicationUrl": "http://localhost:5133",
+      "nativeDebugging": true
     },
     "Svelte Dev": {
       "commandName": "Executable",
       "executablePath": "powershell",
       "commandLineArgs": "-Command \"npm run dev\"",
       "workingDirectory": "."
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "launchBrowser": true,
+      "nativeDebugging": true,
+      "launchUrl": "http://localhost:5133",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5133"
+      },
+      "distributionName": ""
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json"
