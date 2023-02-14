@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using ShortDev.JLab.JNI.Internal.Platform;
+using System.Runtime.InteropServices;
 
 namespace ShortDev.JLab.JNI.Internal;
 
@@ -7,12 +8,12 @@ namespace ShortDev.JLab.JNI.Internal;
 /// </summary>
 internal static unsafe class JniInterop
 {
-    const string DllName = "C:\\Program Files\\Microsoft\\jdk-17.0.3.7-hotspot\\bin\\server\\jvm.dll";
+    const string LibName = LibResolver.JvmLibName;
 
-    [DllImport(DllName, EntryPoint = "JNI_GetDefaultJavaVMInitArgs")]
+    [DllImport(LibName, EntryPoint = "JNI_GetDefaultJavaVMInitArgs")]
     public static extern jint GetDefaultJavaVMInitArgs(ref JavaVMInitArgs args);
 
-    [DllImport(DllName, EntryPoint = "JNI_CreateJavaVM")]
+    [DllImport(LibName, EntryPoint = "JNI_CreateJavaVM")]
     public static extern jint CreateJavaVM(JavaVM** pvm, JNIEnv** penv, JavaVMInitArgs* args);
 
     public static void ThrowOnError(jint status)

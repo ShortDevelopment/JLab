@@ -1,12 +1,14 @@
 ﻿using ShortDev.JLab.JNI.Internal;
 using ShortDev.JLab.JNI.Internal.Platform;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ShortDev.JLab.JNI;
 
 public sealed unsafe class JavaVirtualMachine : IDisposable
 {
-    JavaVM* _vm;
-    JNIEnv* _env;
+    readonly JavaVM* _vm;
+    readonly JNIEnv* _env;
     private JavaVirtualMachine(JavaVM* vm, JNIEnv* env)
     {
         _vm = vm;
@@ -14,11 +16,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     }
 
     public static void SetupPlatform()
-    {
-        if (!OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException();
-        Win32Setup.Setup();
-    }
+        => LibResolver.EnsureInitialized();
 
     public static JavaVirtualMachine Create()
     {
