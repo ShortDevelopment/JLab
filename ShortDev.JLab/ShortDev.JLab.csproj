@@ -15,7 +15,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\ShortDev.JLab.JNI\ShortDev.JLab.JNI.csproj" />
-		<PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.14" />
 	</ItemGroup>
 
 	<Target Name="BuildSvelte" BeforeTargets="BeforeBuild" Condition="$(_EnableSvelteBuild) == true">
