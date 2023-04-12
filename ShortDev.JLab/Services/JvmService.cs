@@ -13,66 +13,74 @@ public sealed class JvmService : IDisposable
     public static JvmService Create()
         => new(JavaVirtualMachine.Create());
 
-    public Task<string> DecompileAsync(string source)
+    readonly string[] CompilerOptions = new[] { "-Xlint" };
+
+    public Task<JvmResult> DecompileAsync(string source)
     {
         return _jvm.RunAsync((vm) =>
         {
             string id = "Test";
             var compiler = vm.CreateCompiler();
+            compiler.SetOptions(CompilerOptions);
             var result = compiler.Compile(
                 id,
                 source
             );
             if (!result.IsSuccess)
-                return result.Error ?? "Unkown error!!";
+                return new JvmResult(result.Error ?? "Unkown error!!", result.DiagnosticJson);
 
             var decompiler = vm.CreateDecompiler();
-            return decompiler.Decompile(result);
+            return new JvmResult(decompiler.Decompile(result), result.DiagnosticJson);
         });
     }
 
-    public Task<string> DisassembleAsync(string source, params string[] options)
+    public Task<JvmResult> DisassembleAsync(string source, params string[] options)
     {
         return _jvm.RunAsync((vm) =>
         {
             string id = "Test";
             var compiler = vm.CreateCompiler();
+            compiler.SetOptions(CompilerOptions);
             var result = compiler.Compile(
                 id,
                 source
             );
             if (!result.IsSuccess)
-                return result.Error ?? "Unkown error!!";
+                return new JvmResult(result.Error ?? "Unkown error!!", result.DiagnosticJson);
 
             var disassembler = vm.CreateDisassembler();
             disassembler.SetOptions(options);
-            return disassembler.Disassemble(result);
+            return new JvmResult(disassembler.Disassemble(result), result.DiagnosticJson);
         });
     }
 
-    public async Task<string> RunAsync(string source)
+    public async Task<JvmResult> RunAsync(string source)
     {
         JavaClassData[]? classes = null;
+        string? diagnosticsJson = null;
         var resultStr = await _jvm.RunAsync((vm) =>
         {
             string id = "Test";
             var compiler = vm.CreateCompiler();
+            compiler.SetOptions(CompilerOptions);
             var result = compiler.Compile(
                 id,
                 source
             );
             if (!result.IsSuccess)
                 return result.Error ?? "Unkown error!!";
+
+            diagnosticsJson = result.DiagnosticJson;
 
             classes = result.GetClasses();
             return string.Empty;
         });
         if (!string.IsNullOrEmpty(resultStr) || classes == null)
-            return resultStr;
+            return new(resultStr, null);
 
         HostLauncher launcher = new();
         launcher.AddClasses(classes);
-        return await launcher.LaunchForResultAsync();
+        return new(await launcher.LaunchForResultAsync(), diagnosticsJson);
     }
 
     public void Dispose()
