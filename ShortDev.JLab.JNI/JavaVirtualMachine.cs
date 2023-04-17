@@ -50,7 +50,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     public void CallMain()
     {
         // loader/Main
-        _env->functions->CallStatic(_env, "Test", "Main", "([Ljava/lang/String;)V", __arglist((void*)0));
+        _env->functions->CallStatic(_env, "Test", "main", "([Ljava/lang/String;)V", __arglist((void*)0));
     }
 
     public int Version
