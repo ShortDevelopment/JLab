@@ -20,7 +20,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
         Win32Setup.Setup();
     }
 
-    public static JavaVirtualMachine Create()
+    public static JavaVirtualMachine Create(bool debug = false)
     {
         SetupPlatform();
         string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
@@ -39,7 +39,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             options[2].optionString = (char*)pOption3;
             options[3].optionString = (char*)pOption4;
             vmArgs.options = options;
-            vmArgs.nOptions = 4;
+            vmArgs.nOptions = debug ? 4 : 3;
             vmArgs.ignoreUnrecognized = false;
             JniInterop.ThrowOnError(JniInterop.CreateJavaVM(&jvm, &env, &vmArgs));
             env->functions->ThrowOnError(env);
