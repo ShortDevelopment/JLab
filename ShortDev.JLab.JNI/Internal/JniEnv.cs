@@ -63,8 +63,8 @@ internal unsafe struct JNINativeInterface_
     public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*clazz*/, char*/*name*/, char*/*sig*/, void*> GetMethodID;
 
     void* CallObjectMethod;
-    public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*obj*/, void*/*method*/, ArgIterator, void*> CallObjectMethodV;
-    void* CallObjectMethodA;
+    void* CallObjectMethodV;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*/*obj*/, void*/*method*/, jvalue*, void*> CallObjectMethodA;
 
     void* CallBooleanMethod;
     void* CallBooleanMethodV;
@@ -187,8 +187,8 @@ internal unsafe struct JNINativeInterface_
     public delegate* unmanaged[Stdcall]<JNIEnv*, void*, char*, char*, void*> GetStaticMethodID;
 
     void* CallStaticObjectMethod;
-    public delegate* unmanaged[Stdcall]<JNIEnv*, void*, void*, ArgIterator, void*> CallStaticObjectMethodV;
-    void* CallStaticObjectMethodA;
+    void* CallStaticObjectMethodV;
+    public delegate* unmanaged[Stdcall]<JNIEnv*, void*, void*, jvalue*, void*> CallStaticObjectMethodA;
 
     void* CallStaticBooleanMethod;
     void* CallStaticBooleanMethodV;
@@ -390,7 +390,10 @@ internal unsafe struct JNINativeInterface_
     {
         ArgIterator args = new(__arglist);
         GetMethodInternal(env, className, (void*)0, methodName, sig, isStatic: true, out var pClass, out var pMethod);
-        var result = CallStaticObjectMethodV(env, pClass, pMethod, args);
+
+        var pArgs = stackalloc jvalue[args.GetRemainingCount()];
+        jvalue.Initialize(pArgs, args);
+        var result = CallStaticObjectMethodA(env, pClass, pMethod, pArgs);
         ThrowOnError(env);
         return result;
     }
@@ -399,7 +402,10 @@ internal unsafe struct JNINativeInterface_
     {
         ArgIterator args = new(__arglist);
         GetMethodInternal(env, className, (void*)0, methodName, sig, isStatic: false, out _, out var pMethod);
-        var result = CallObjectMethodV(env, pObj, pMethod, args);
+
+        var pArgs = stackalloc jvalue[args.GetRemainingCount()];
+        jvalue.Initialize(pArgs, args);
+        var result = CallObjectMethodA(env, pObj, pMethod, pArgs);
         ThrowOnError(env);
         return result;
     }
