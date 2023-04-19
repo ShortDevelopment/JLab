@@ -1,4 +1,6 @@
 <script lang="ts" type="module">
+	import type { JLabDiagnostic, JLabResult } from "./Api";
+	import { JLabDiagnosticType } from "./Api";
 	type JLabOutputType = "JavaCode" | "ByteCode" | "ByteCode-Verbose" | "Run";
 
 	import { onMount } from "svelte";
@@ -25,14 +27,52 @@
 			const code = codeEditor.getValue();
 			try {
 				console.log(outputType);
-				const result = await fetch(`api/v1.0/${outputType}`, {
-					method: "post",
-					headers: {
-						"content-type": "text/plain",
-					},
-					body: code,
-				}).then((x) => x.text());
-				previewEditor.setValue(result);
+				const result: JLabResult = await fetch(
+					`api/v1.0/${outputType}`,
+					{
+						method: "post",
+						headers: {
+							"content-type": "text/plain",
+						},
+						body: code,
+					}
+				).then((x) => x.json());
+
+				const dignosticData = JSON.parse(
+					result.diagnostics
+				) as JLabDiagnostic[];
+
+				const model = codeEditor.getModel();
+				const markerData = dignosticData.map((diagnostic) => {
+					const { lineNumber: startLineNumber, column: startColumn } =
+						model.getPositionAt(diagnostic.start);
+					const { lineNumber: endLineNumber, column: endColumn } =
+						model.getPositionAt(diagnostic.end);
+					return {
+						message: diagnostic.msg,
+						severity: getMonacoSeverity(),
+						startLineNumber,
+						startColumn,
+						endLineNumber,
+						endColumn,
+					} as monaco.editor.IMarkerData;
+
+					function getMonacoSeverity() {
+						switch (diagnostic.kind) {
+							case JLabDiagnosticType.Error:
+								return monaco.MarkerSeverity.Error;
+							case JLabDiagnosticType.Warning:
+							case JLabDiagnosticType.MandatoryWarning:
+								return monaco.MarkerSeverity.Warning;
+							case JLabDiagnosticType.Note:
+								return monaco.MarkerSeverity.Info;
+						}
+						return monaco.MarkerSeverity.Hint;
+					}
+				});
+				monaco.editor.setModelMarkers(model, "owner", markerData);
+
+				previewEditor.getModel().setValue(result.content);
 			} catch (ex) {
 				previewEditor.setValue(ex);
 			}
@@ -45,7 +85,7 @@
 	onMount(() => {
 		const defaultValue = `public final class Test{
 
-	public static void Main(String[] args){
+	public static void main(String[] args){
 		System.out.println("Hello World!");
 	}
 
@@ -57,7 +97,7 @@
 		});
 		codeEditor.onDidChangeModelContent((e) => OnContentChanged());
 
-		monaco.languages.register({ id: 'java' });
+		monaco.languages.register({ id: "java" });
 
 		previewEditor = monaco.editor.create(previewContainer, {
 			language: "java",
@@ -78,7 +118,7 @@
 
 				return {
 					range: new monaco.Range(
-						position.lineNumber,						
+						position.lineNumber,
 						wordAtPos.startColumn,
 						position.lineNumber,
 						wordAtPos.endColumn
@@ -86,8 +126,8 @@
 					contents: [
 						{ value: "`" + word + "`" },
 						{
-							value: opCode.description
-						}
+							value: opCode.description,
+						},
 					],
 				};
 			},

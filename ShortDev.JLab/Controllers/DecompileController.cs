@@ -15,43 +15,35 @@ public class DecompileController : Controller
     [Consumes("text/plain")]
     public async Task<IActionResult> Decompile()
     {
-        using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
-        {
-            string source = await reader.ReadToEndAsync();
-            return Content(await _jvm.DecompileAsync(source));
-        }
+        using StreamReader reader = new(Request.Body, Encoding.UTF8);
+        string source = await reader.ReadToEndAsync();
+        return Json(await _jvm.DecompileAsync(source));
     }
 
     [HttpPost, Route("api/v1.0/ByteCode")]
     [Consumes("text/plain")]
     public async Task<IActionResult> ByteCode()
     {
-        using (StreamReader reader = new(Request.Body, Encoding.UTF8))
-        {
-            string source = await reader.ReadToEndAsync();
-            return Content(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants"));
-        }
+        using StreamReader reader = new(Request.Body, Encoding.UTF8);
+        string source = await reader.ReadToEndAsync();
+        return Json(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants"));
     }
 
     [HttpPost, Route("api/v1.0/ByteCode-Verbose")]
     [Consumes("text/plain")]
     public async Task<IActionResult> ByteCodeVerbose()
     {
-        using (StreamReader reader = new(Request.Body, Encoding.UTF8))
-        {
-            string source = await reader.ReadToEndAsync();
-            return Content(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants", "-v"));
-        }
+        using StreamReader reader = new(Request.Body, Encoding.UTF8);
+        string source = await reader.ReadToEndAsync();
+        return Json(await _jvm.DisassembleAsync(source, "-c", "-l", "-p", "-s", "-constants", "-v"));
     }
 
     [HttpPost, Route("api/v1.0/Run")]
     [Consumes("text/plain")]
     public async Task<IActionResult> RunJavaCode()
     {
-        using (StreamReader reader = new(Request.Body, Encoding.UTF8))
-        {
-            string source = await reader.ReadToEndAsync();
-            return Content(await _jvm.RunAsync(source));
-        }
+        using StreamReader reader = new(Request.Body, Encoding.UTF8);
+        string source = await reader.ReadToEndAsync();
+        return Json(await _jvm.RunAsync(source));
     }
 }

@@ -10,12 +10,6 @@
       "applicationUrl": "http://localhost:5133",
       "nativeDebugging": true
     },
-    "Svelte Dev": {
-      "commandName": "Executable",
-      "executablePath": "powershell",
-      "commandLineArgs": "-Command \"npm run dev\"",
-      "workingDirectory": "."
-    },
     "WSL": {
       "commandName": "WSL2",
       "launchBrowser": true,

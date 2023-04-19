@@ -18,24 +18,26 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     public static void SetupPlatform()
         => LibResolver.EnsureInitialized();
 
-    public static JavaVirtualMachine Create()
+    public static JavaVirtualMachine Create(bool debug = false)
     {
         SetupPlatform();
         string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
         fixed (byte* pOption1 = $"-Djava.class.path={jarLocation}".ToUTF8()) // java.library.path
         fixed (byte* pOption2 = "--add-exports=jdk.jdeps/com.sun.tools.classfile=ALL-UNNAMED".ToUTF8())
         fixed (byte* pOption3 = "--add-exports=jdk.jdeps/com.sun.tools.javap=ALL-UNNAMED".ToUTF8())
+        fixed (byte* pOption4 = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=55730".ToUTF8())
         {
             JavaVM* jvm;
             JNIEnv* env;
             JavaVMInitArgs vmArgs = new();
             vmArgs.version = JniVersion.JNI_VERSION_1_6;
-            var options = stackalloc JavaVMOption[3];
+            var options = stackalloc JavaVMOption[4];
             options[0].optionString = (char*)pOption1;
             options[1].optionString = (char*)pOption2;
             options[2].optionString = (char*)pOption3;
+            options[3].optionString = (char*)pOption4;
             vmArgs.options = options;
-            vmArgs.nOptions = 3;
+            vmArgs.nOptions = debug ? 4 : 3;
             vmArgs.ignoreUnrecognized = false;
             JniInterop.ThrowOnError(JniInterop.CreateJavaVM(&jvm, &env, &vmArgs));
             env->functions->ThrowOnError(env);
@@ -45,8 +47,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
 
     public void CallMain()
     {
-        // loader/Main
-        _env->functions->CallStatic(_env, "Test", "Main", "([Ljava/lang/String;)V", IntPtr.Zero);
+        _env->functions->CallStatic(_env, "Test", "main", "([Ljava/lang/String;)V", IntPtr.Zero);
     }
 
     public int Version

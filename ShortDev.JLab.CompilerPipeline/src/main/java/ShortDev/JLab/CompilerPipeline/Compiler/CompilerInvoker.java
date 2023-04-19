@@ -9,7 +9,8 @@ import javax.tools.ToolProvider;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public final class CompilerInvoker implements Closeable {
     private final JavaCompiler _compiler;
@@ -29,15 +30,32 @@ public final class CompilerInvoker implements Closeable {
         return new CompilerInvoker(systemCompiler, fileManager);
     }
 
+    private List<String> _options = null;
+
+    public void SetOptions(String[] options) {
+        if (options == null)
+            _options = null;
+        else
+            _options = List.of(options);
+    }
+
+    private Locale _locale = Locale.US;
+
+    public void SetLocale(String locale) {
+        _locale = Locale.forLanguageTag(locale);
+    }
+
     public CompilationResult Compile(String id, String code) {
-        var compilationUnits = Arrays.asList(new JavaStringSource(id, code));
+        var compilationUnits = List.of(new JavaStringSource(id, code));
 
         var fileManager = new JLabFileManager(_fileManager);
 
+        var listener = new JLabDiagnosticsListener(_locale);
+
         var writer = new StringWriter();
-        var task = _compiler.getTask(writer, fileManager, null, null, null, compilationUnits);
+        var task = _compiler.getTask(writer, fileManager, listener, _options, null, compilationUnits);
         var isSuccess = task.call();
-        return new CompilationResult(id, isSuccess, writer.toString(), fileManager);
+        return new CompilationResult(id, isSuccess, writer.toString(), fileManager, listener);
     }
 
     @Override

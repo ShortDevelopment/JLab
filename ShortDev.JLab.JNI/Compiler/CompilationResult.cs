@@ -17,19 +17,30 @@ public sealed unsafe class CompilationResult
             "IsSuccess",
             "()Z"
         ));
-        var pStr = env->functions->CallInstance(
+        var pErrorStr = env->functions->CallInstance(
             env,
             "ShortDev/JLab/CompilerPipeline/CompilationResult",
             pResult,
             "Error",
             "()Ljava/lang/String;"
         );
-        if (pStr != null)
-            Error = env->functions->GetStringContent(env, pStr);
+        if (pErrorStr != null)
+            Error = env->functions->GetStringContent(env, pErrorStr);
+
+        var pDiagnosticStr = env->functions->CallInstance(
+            env,
+            "ShortDev/JLab/CompilerPipeline/CompilationResult",
+            pResult,
+            "getDiagnosticJson",
+            "()Ljava/lang/String;",
+            __arglist()
+        );
+        DiagnosticJson = env->functions->GetStringContent(env, pDiagnosticStr);
     }
 
     public bool IsSuccess { get; }
     public string? Error { get; }
+    public string DiagnosticJson { get; }
 
     public JavaClassData[] GetClasses()
     {
