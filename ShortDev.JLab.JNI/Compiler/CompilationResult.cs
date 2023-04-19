@@ -32,8 +32,7 @@ public sealed unsafe class CompilationResult
             "ShortDev/JLab/CompilerPipeline/CompilationResult",
             pResult,
             "getDiagnosticJson",
-            "()Ljava/lang/String;",
-            __arglist()
+            "()Ljava/lang/String;"
         );
         DiagnosticJson = env->functions->GetStringContent(env, pDiagnosticStr);
     }

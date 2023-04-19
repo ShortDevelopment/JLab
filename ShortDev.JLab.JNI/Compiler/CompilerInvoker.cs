@@ -21,9 +21,7 @@ public sealed unsafe class CompilerInvoker
             _pCompiler,
             "SetOptions",
             "([Ljava/lang/String;)V",
-            __arglist(
-                _env->functions->CreateStringArray(_env, options)
-            )
+            (IntPtr)_env->functions->CreateStringArray(_env, options)
         );
     }
 
