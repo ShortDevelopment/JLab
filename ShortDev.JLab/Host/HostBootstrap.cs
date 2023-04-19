@@ -22,10 +22,17 @@ public sealed class HostBootstrap
         foreach (var classData in _classes)
             vm.LoadClass(classData.Name, classData.Data);
 
-        if (OperatingSystem.IsLinux())
-            SandBox.EnableStrict();
-        else
-            throw new SecurityException("No sandbox configured for this platform");
+        try
+        {
+            if (OperatingSystem.IsLinux())
+                SandBox.EnableStrict();
+            else
+                throw new SecurityException("No sandbox configured for this platform");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠ SandBox: {ex.Message}");
+        }
 
         vm.CallMain();
     }

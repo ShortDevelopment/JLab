@@ -11,7 +11,7 @@ internal static unsafe class Native
     public static extern int prctl(PR option, ulong arg2, ulong arg3, ulong arg4, ulong arg5);
 
     [DllImport("libc", ExactSpelling = true)]
-    public static extern int strerror_r(int errnum, char* buf, ulong buflen);
+    public static extern byte* strerror(int errnum);
 }
 
 internal enum PR : int
