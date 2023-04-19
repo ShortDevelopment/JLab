@@ -6,7 +6,8 @@
     },
     "WSL": {
       "commandName": "WSL2",
-      "distributionName": ""
+      "distributionName": "",
+      "nativeDebugging": true
     }
   }
 }

@@ -1,12 +1,14 @@
 ﻿using ShortDev.JLab.JNI.Internal;
 using ShortDev.JLab.JNI.Internal.Platform;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ShortDev.JLab.JNI;
 
 public sealed unsafe class JavaVirtualMachine : IDisposable
 {
-    JavaVM* _vm;
-    JNIEnv* _env;
+    readonly JavaVM* _vm;
+    readonly JNIEnv* _env;
     private JavaVirtualMachine(JavaVM* vm, JNIEnv* env)
     {
         _vm = vm;
@@ -14,17 +16,13 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     }
 
     public static void SetupPlatform()
-    {
-        if (!OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException();
-        Win32Setup.Setup();
-    }
+        => LibResolver.EnsureInitialized();
 
     public static JavaVirtualMachine Create(bool debug = false)
     {
         SetupPlatform();
         string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
-        fixed (byte* pOption1 = $"-Djava.class.path={jarLocation};".ToUTF8()) // java.library.path
+        fixed (byte* pOption1 = $"-Djava.class.path={jarLocation}".ToUTF8()) // java.library.path
         fixed (byte* pOption2 = "--add-exports=jdk.jdeps/com.sun.tools.classfile=ALL-UNNAMED".ToUTF8())
         fixed (byte* pOption3 = "--add-exports=jdk.jdeps/com.sun.tools.javap=ALL-UNNAMED".ToUTF8())
         fixed (byte* pOption4 = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=55730".ToUTF8())
@@ -49,8 +47,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
 
     public void CallMain()
     {
-        // loader/Main
-        _env->functions->CallStatic(_env, "Test", "main", "([Ljava/lang/String;)V", __arglist((void*)0));
+        _env->functions->CallStatic(_env, "Test", "main", "([Ljava/lang/String;)V", IntPtr.Zero);
     }
 
     public int Version
@@ -82,8 +79,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             _env,
             "ShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker;"
         );
         return new(_env, pCompiler);
     }
@@ -94,8 +90,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             _env,
             "ShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker;"
         );
         return new(_env, pDecompiler);
     }
@@ -106,8 +101,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             _env,
             "ShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker;"
         );
         return new(_env, pDecompiler);
     }

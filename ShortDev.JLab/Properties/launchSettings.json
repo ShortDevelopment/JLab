@@ -7,11 +7,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5133"
+      "applicationUrl": "http://localhost:5133",
+      "nativeDebugging": true
     },
     "WSL": {
       "commandName": "WSL2",
       "launchBrowser": true,
+      "nativeDebugging": true,
       "launchUrl": "http://localhost:5133",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
