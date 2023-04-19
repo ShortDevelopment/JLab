@@ -22,9 +22,7 @@ public sealed unsafe class DisassemblerInvoker
             _pDisassembler,
             "SetFlag",
             "([Ljava/lang/String;)V",
-            __arglist(
-                _env->functions->CreateStringArray(_env, options)
-            )
+            (IntPtr)_env->functions->CreateStringArray(_env, options)
         );
     }
 
@@ -36,9 +34,7 @@ public sealed unsafe class DisassemblerInvoker
             _pDisassembler,
             "Disassemble",
             "(LShortDev/JLab/CompilerPipeline/CompilationResult;)Ljava/lang/String;",
-            __arglist(
-                compilationResult.Ptr
-            )
+            (IntPtr)compilationResult.Ptr
         );
         return _env->functions->GetStringContent(_env, result);
     }

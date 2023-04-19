@@ -46,7 +46,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     public void CallMain()
     {
         // loader/Main
-        _env->functions->CallStatic(_env, "Test", "Main", "([Ljava/lang/String;)V", __arglist((void*)0));
+        _env->functions->CallStatic(_env, "Test", "Main", "([Ljava/lang/String;)V", IntPtr.Zero);
     }
 
     public int Version
@@ -78,8 +78,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             _env,
             "ShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/Compiler/CompilerInvoker;"
         );
         return new(_env, pCompiler);
     }
@@ -90,8 +89,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             _env,
             "ShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/Decompiler/DecompilerInvoker;"
         );
         return new(_env, pDecompiler);
     }
@@ -102,8 +100,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
             _env,
             "ShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker",
             "Create",
-            "()LShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/Disassembler/DisassemblerInvoker;"
         );
         return new(_env, pDecompiler);
     }

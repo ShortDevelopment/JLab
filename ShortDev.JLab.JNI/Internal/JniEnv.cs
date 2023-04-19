@@ -368,8 +368,7 @@ internal unsafe struct JNINativeInterface_
                 "java/lang/Throwable",
                 throwable,
                 "toString",
-                "()Ljava/lang/String;",
-                __arglist()
+                "()Ljava/lang/String;"
             );
             if (!string.IsNullOrEmpty(msg))
                 msg += Environment.NewLine;
@@ -379,31 +378,28 @@ internal unsafe struct JNINativeInterface_
                 "java/lang/Throwable",
                 throwable,
                 "getCause",
-                "()Ljava/lang/Throwable;",
-                __arglist()
+                "()Ljava/lang/Throwable;"
             );
         }
         throw new Exception(msg);
     }
 
-    public void* CallStatic(JNIEnv* env, string className, string methodName, string sig, __arglist)
+    public void* CallStatic(JNIEnv* env, string className, string methodName, string sig, params object[] args)
     {
-        ArgIterator args = new(__arglist);
         GetMethodInternal(env, className, (void*)0, methodName, sig, isStatic: true, out var pClass, out var pMethod);
 
-        var pArgs = stackalloc jvalue[args.GetRemainingCount()];
+        var pArgs = stackalloc jvalue[args.Length];
         jvalue.Initialize(pArgs, args);
         var result = CallStaticObjectMethodA(env, pClass, pMethod, pArgs);
         ThrowOnError(env);
         return result;
     }
 
-    public void* CallInstance(JNIEnv* env, string className, void* pObj, string methodName, string sig, __arglist)
+    public void* CallInstance(JNIEnv* env, string className, void* pObj, string methodName, string sig, params object[] args)
     {
-        ArgIterator args = new(__arglist);
         GetMethodInternal(env, className, (void*)0, methodName, sig, isStatic: false, out _, out var pMethod);
 
-        var pArgs = stackalloc jvalue[args.GetRemainingCount()];
+        var pArgs = stackalloc jvalue[args.Length];
         jvalue.Initialize(pArgs, args);
         var result = CallObjectMethodA(env, pObj, pMethod, pArgs);
         ThrowOnError(env);

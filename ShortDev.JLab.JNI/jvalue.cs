@@ -16,58 +16,54 @@ internal unsafe ref struct jvalue
     [FieldOffset(0)] double d;
     [FieldOffset(0)] IntPtr l;
 
-    public static void Initialize(jvalue* @this, ArgIterator iterator)
+    public static void Initialize(jvalue* @this, object[] args)
     {
         var item = @this;
-        while (iterator.GetRemainingCount() > 0)
+        foreach (var arg in args)
         {
-            var hArg = iterator.GetNextArg();
-            var type = __reftype(hArg);
+            var type = arg.GetType();
             var typeCode = Type.GetTypeCode(type);
 
             switch (typeCode)
             {
                 case TypeCode.Boolean:
-                    item->z = __refvalue(hArg, bool);
+                    item->z = (bool)(arg);
                     break;
                 case TypeCode.Char:
-                    item->c = __refvalue(hArg, char);
+                    item->c = (char)(arg);
                     break;
                 case TypeCode.SByte:
-                    item->b = __refvalue(hArg, sbyte);
+                    item->b = (sbyte)(arg);
                     break;
                 case TypeCode.Byte:
-                    item->b = (sbyte)__refvalue(hArg, byte);
+                    item->b = (sbyte)(byte)(arg);
                     break;
                 case TypeCode.Int16:
-                    item->s = __refvalue(hArg, short);
+                    item->s = (short)(arg);
                     break;
                 case TypeCode.UInt16:
-                    item->s = (short)__refvalue(hArg, ushort);
+                    item->s = (short)(ushort)(arg);
                     break;
                 case TypeCode.Int32:
-                    item->i = __refvalue(hArg, int);
+                    item->i = (int)(arg);
                     break;
                 case TypeCode.UInt32:
-                    item->i = (int)__refvalue(hArg, uint);
+                    item->i = (int)(uint)(arg);
                     break;
                 case TypeCode.Int64:
-                    item->j = __refvalue(hArg, long);
+                    item->j = (long)(arg);
                     break;
                 case TypeCode.UInt64:
-                    item->j = (long)__refvalue(hArg, ulong);
+                    item->j = (long)(ulong)(arg);
                     break;
                 case TypeCode.Single:
-                    item->f = __refvalue(hArg, float);
+                    item->f = (float)(arg);
                     break;
                 case TypeCode.Double:
-                    item->d = __refvalue(hArg, double);
+                    item->d = (double)(arg);
                     break;
                 case TypeCode.Object:
-                    if (!type.IsPointer)
-                        throw new InvalidOperationException("Only object pointers are supported!");
-
-                    item->l = (IntPtr)__refvalue(hArg, void*);
+                    item->l = (IntPtr)(arg);
                     break;
                 default:
                     throw new InvalidOperationException($"Type {type} is not supported!");

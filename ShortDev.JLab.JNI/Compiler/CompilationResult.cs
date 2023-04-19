@@ -5,7 +5,7 @@ namespace ShortDev.JLab.JNI.Compiler;
 public sealed unsafe class CompilationResult
 {
     internal void* Ptr { get; }
-    JNIEnv* _env;
+    readonly JNIEnv* _env;
     internal CompilationResult(JNIEnv* env, void* pResult)
     {
         _env = env;
@@ -15,16 +15,14 @@ public sealed unsafe class CompilationResult
             "ShortDev/JLab/CompilerPipeline/CompilationResult",
             pResult,
             "IsSuccess",
-            "()Z",
-            __arglist()
+            "()Z"
         ));
         var pStr = env->functions->CallInstance(
             env,
             "ShortDev/JLab/CompilerPipeline/CompilationResult",
             pResult,
             "Error",
-            "()Ljava/lang/String;",
-            __arglist()
+            "()Ljava/lang/String;"
         );
         if (pStr != null)
             Error = env->functions->GetStringContent(env, pStr);
@@ -40,16 +38,14 @@ public sealed unsafe class CompilationResult
             "ShortDev/JLab/CompilerPipeline/CompilationResult",
             Ptr,
             "FileManager",
-            "()LShortDev/JLab/CompilerPipeline/JLabFileManager;",
-            __arglist()
+            "()LShortDev/JLab/CompilerPipeline/JLabFileManager;"
         );
         var pFilesArray = _env->functions->CallInstance(
             _env,
             "ShortDev/JLab/CompilerPipeline/JLabFileManager",
             pFileManager,
             "GetFiles",
-            "()[LShortDev/JLab/CompilerPipeline/JavaClassMemoryFile;",
-            __arglist()
+            "()[LShortDev/JLab/CompilerPipeline/JavaClassMemoryFile;"
         );
         var length = _env->functions->GetArrayLength(_env, pFilesArray);
         _env->functions->ThrowOnError(_env);
@@ -66,8 +62,7 @@ public sealed unsafe class CompilationResult
                     "ShortDev/JLab/CompilerPipeline/JavaClassMemoryFile",
                     pEle,
                     "GetName",
-                    "()Ljava/lang/String;",
-                    __arglist()
+                    "()Ljava/lang/String;"
                 )
             );
             var pData = _env->functions->CallInstance(
@@ -75,8 +70,7 @@ public sealed unsafe class CompilationResult
                 "ShortDev/JLab/CompilerPipeline/JavaClassMemoryFile",
                 pEle,
                 "GetClassData",
-                "()[B",
-                __arglist()
+                "()[B"
             );
             var dataLength = _env->functions->GetArrayLength(_env, pData);
             _env->functions->ThrowOnError(_env);

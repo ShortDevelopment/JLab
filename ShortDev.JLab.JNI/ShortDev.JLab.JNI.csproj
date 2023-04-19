@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShortDev.Linux.SandBox\ShortDev.Linux.SandBox.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ShortDev.JLab.CompilerPipeline.jar">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
