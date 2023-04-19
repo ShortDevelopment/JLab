@@ -22,7 +22,7 @@ public sealed unsafe class JavaVirtualMachine : IDisposable
     {
         SetupPlatform();
         string jarLocation = Path.Combine(AppContext.BaseDirectory, "ShortDev.JLab.CompilerPipeline.jar");
-        fixed (byte* pOption1 = $"-Djava.class.path={jarLocation};".ToUTF8()) // java.library.path
+        fixed (byte* pOption1 = $"-Djava.class.path={jarLocation}".ToUTF8()) // java.library.path
         fixed (byte* pOption2 = "--add-exports=jdk.jdeps/com.sun.tools.classfile=ALL-UNNAMED".ToUTF8())
         fixed (byte* pOption3 = "--add-exports=jdk.jdeps/com.sun.tools.javap=ALL-UNNAMED".ToUTF8())
         {
