@@ -20,7 +20,8 @@ public sealed class HostLauncher
         {
             p.StartInfo.FileName = currentProccess.MainModule!.FileName;
             p.StartInfo.Arguments = HostBootstrap.CmdArgumentName;
-            
+            p.StartInfo.UseShellExecute = false;
+
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardInput = true;
@@ -31,7 +32,8 @@ public sealed class HostLauncher
 
             TaskCompletionSource promise = new();
             p.Exited += (s, e) => promise.SetResult();
-            
+
+            var startTime = DateTime.Now;
             p.Start();
             p.BeginOutputReadLine();
             p.BeginErrorReadLine();
@@ -51,7 +53,7 @@ public sealed class HostLauncher
             }
             else
             {
-                stdOutputWriter.WriteLine($"Process terminated with {p.ExitCode} after {p.ExitTime - p.StartTime}");
+                stdOutputWriter.WriteLine($"Process terminated with {p.ExitCode} after {p.ExitTime - startTime}");
             }
 
             return stdOutputWriter.ToString();
