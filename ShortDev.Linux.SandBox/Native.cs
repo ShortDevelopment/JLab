@@ -4,17 +4,17 @@ namespace ShortDev.Linux.SandBox;
 
 internal static unsafe class Native
 {
-    [DllImport("libc.so")]
+    [DllImport("libc")]
     public static extern int seccomp(SECCOMP operation, SECCOMP_FILTER_FLAG flags, void* args);
 
-    [DllImport("libc.so")]
+    [DllImport("libc", SetLastError = true)]
     public static extern int prctl(PR option, ulong arg2, ulong arg3, ulong arg4, ulong arg5);
 
-    [DllImport("libc.so", ExactSpelling = true)]
+    [DllImport("libc", ExactSpelling = true)]
     public static extern int strerror_r(int errnum, char* buf, ulong buflen);
 }
 
-internal enum PR
+internal enum PR : int
 {
     SET_SECCOMP = 22
 }

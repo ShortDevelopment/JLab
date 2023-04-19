@@ -1,11 +1,12 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ShortDev.Linux.SandBox;
 
 internal sealed class UnixException : Exception
 {
     public UnixException() : this(Marshal.GetLastPInvokeError()) { }
-    public UnixException(int errorCode) : base(GetErrorMessage(errorCode))
+    public UnixException(int errorCode) : base($"Error {errorCode}\n{GetErrorMessage(errorCode)}")
     {
         ErrorCode = errorCode;
     }
@@ -14,10 +15,11 @@ internal sealed class UnixException : Exception
 
     static unsafe string GetErrorMessage(int errorCode)
     {
-        const int capacity = 256;
-        char* buf = stackalloc char[capacity];
-        if (Native.strerror_r(errorCode, buf, capacity) != 0)
-            return "Error while getting error message";
-        return new string(buf);
+        const int capacity = 1024;
+        fixed (char* buf = new char[capacity])
+        {
+            Native.strerror_r(errorCode, buf, capacity);
+            return Encoding.UTF8.GetString((byte*)buf, capacity);
+        }
     }
 }
