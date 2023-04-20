@@ -26,6 +26,12 @@
 		throttleHandle = setTimeout(async () => {
 			const code = codeEditor.getValue();
 			try {
+				localStorage.setItem("code-cache", code);
+			} catch (ex) {
+				console.warn("Could not save code");
+				console.warn(ex);
+			}
+			try {
 				console.log(outputType);
 				const result: JLabResult = await fetch(
 					`api/v1.0/${outputType}`,
@@ -83,13 +89,18 @@
 	import opCodes from "./java_opcodes.json"; // assert { type: "json" };
 
 	onMount(() => {
-		const defaultValue = `public final class Test{
+		let defaultValue = `public final class Test{
 
 	public static void main(String[] args){
 		System.out.println("Hello World!");
 	}
 
 }`;
+
+		try {
+			defaultValue = localStorage.getItem("code-cache") ?? defaultValue;
+		} catch (ex) {}
+
 		codeEditor = monaco.editor.create(editorContainer, {
 			language: "java",
 			automaticLayout: false,
