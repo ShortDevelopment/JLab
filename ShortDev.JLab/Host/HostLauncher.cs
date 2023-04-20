@@ -38,7 +38,14 @@ public sealed class HostLauncher
             p.BeginOutputReadLine();
             p.BeginErrorReadLine();
 
-            JavaClassData.Write(p.StandardInput.BaseStream, _classes);
+            try
+            {
+                JavaClassData.Write(p.StandardInput.BaseStream, _classes);
+            }
+            catch (Exception ex)
+            {
+                stdOutputWriter.WriteLine($"❗ {nameof(HostBootstrap)}: {ex.Message}");
+            }
 
             await Task.WhenAny(
                 Task.Delay(Timeout),
