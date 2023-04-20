@@ -22,11 +22,14 @@ internal static class LibResolver
         string? path = null;
         if (libName == JvmLibName)
         {
+            string? defaultPath = null;
             if (OperatingSystem.IsWindows())
-                path = @"C:\Program Files\Microsoft\jdk-17.0.3.7-hotspot\bin\server\jvm.dll";
+                defaultPath = @"C:\Program Files\Microsoft\jdk-17.0.3.7-hotspot\bin\server\jvm.dll";
 
             if (OperatingSystem.IsLinux())
-                path = @"/usr/lib/jvm/java-17-openjdk-amd64/lib/server/libjvm.so";
+                defaultPath = @"/usr/lib/jvm/java-17-openjdk-amd64/lib/server/libjvm.so";
+
+            path = Environment.GetEnvironmentVariable("LIB_JVM_PATH") ?? defaultPath ?? "Invalid JVM path";
         }
 
         if (path != null)
