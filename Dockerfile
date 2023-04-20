@@ -16,4 +16,6 @@ COPY --from=build-env /App/out .
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y openjdk-17-jdk && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["dotnet", "ShortDev.JLab.dll"]
+# Make executable
+RUN chmod 7777 ./ShortDev.JLab
+ENTRYPOINT ["./ShortDev.JLab"]
