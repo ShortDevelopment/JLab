@@ -132,6 +132,23 @@
 				};
 			},
 		});
+
+		// Theme
+		{
+			const updateTheme = (darkMode: boolean) => {
+				const theme = darkMode ? "vs-dark" : "vs";
+				codeEditor.updateOptions({ theme });
+				previewEditor.updateOptions({ theme });
+			};
+
+			const mediaQuery = window.matchMedia(
+				`(prefers-color-scheme: dark)`
+			);
+			mediaQuery.addEventListener("change", (e) => {
+				updateTheme(e.matches);
+			});
+			updateTheme(mediaQuery.matches);
+		}
 	});
 
 	window.addEventListener("resize", () => {
