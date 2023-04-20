@@ -67,16 +67,16 @@ public sealed class JvmService : IDisposable
                 id,
                 source
             );
-            if (!result.IsSuccess)
-                return result.Error ?? "Unkown error!!";
 
             diagnosticsJson = result.DiagnosticJson;
+            if (!result.IsSuccess)
+                return result.Error ?? "Unkown error!!";
 
             classes = result.GetClasses();
             return string.Empty;
         });
         if (!string.IsNullOrEmpty(resultStr) || classes == null)
-            return new(resultStr, null);
+            return new(resultStr, diagnosticsJson);
 
         HostLauncher launcher = new();
         launcher.AddClasses(classes);
